@@ -18,36 +18,48 @@ class SongController extends Controller
         $data = $request->all();
         if(!empty($data['starttime'])){
             //普清
-            $data = DB::table('songs')
-                    ->whereColumn([
-                        ['UploadDate', '>', $data['starttime']],
-                    ])
-                    ->groupBy('SongMid')->get();
+            if($user->rank==0){
+                $subQuery = DB::table(DB::raw('songs'))
+                    ->where('UploadDate','>',$data['starttime'])
+                    ->orderBy('videoClass', 'asc')
+                    ->limit(9999999999);
+                $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
+                    ->mergeBindings($subQuery)
+                    ->groupBy('t.SongMid')
+                    ->paginate(20);
+            }
             //高清
             if($user->rank==1){
-
+                //普清
+                $subQuer = DB::table(DB::raw('songs'))
+                    ->where('UploadDate','>',$data['starttime'])
+                    ->orderBy('videoClass', 'desc')
+                    ->limit(9999999999);
+                $data = DB::table(DB::raw("({$subQuer->toSql()}) as t"))
+                    ->mergeBindings($subQuer)
+                    ->groupBy('t.SongMid')
+                    ->paginate(20);
             }
         }else{
-            DB::enableQueryLog();
+            //普清
             $subQuery = DB::table(DB::raw('songs'))
                 ->orderBy('videoClass', 'asc')
                 ->limit(9999999999);
-            $query = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
+            $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
                 ->mergeBindings($subQuery)
                 ->groupBy('t.SongMid')
                 ->paginate(20);
-            $data = DB::getQueryLog();
-            //普清
-            $data = DB::table('songs')->orderBy('videoClass','asc')->groupBy('SongMid')->get();
-//            $data = DB::table($data)->groupBy('SongMid')->paginate(20);
-//            $data = DB::table('songs')->max('videoClass')->paginate(20);
-
-            return $data;
             //高清
             if($user->rank==1){
-                $data = DB::table('songs')->groupBy('SongMid')->paginate(20);
+                //普清
+                $subQuery = DB::table(DB::raw('songs'))
+                    ->orderBy('videoClass', 'desc')
+                    ->limit(9999999999);
+                $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
+                    ->mergeBindings($subQuery)
+                    ->groupBy('t.SongMid')
+                    ->paginate(20);
             }
-
         }
 
         if($data){
