@@ -48,6 +48,7 @@ trait AuthenticatesUsers
             $user->expire = 43200;
             $uploadDate = DB::table('songs')->orderBy('UploadDate','desc')->value('UploadDate');
             $user->UploadDate = $uploadDate;
+            $user->date = date('Y-m-d H:i:s');
             return response()->json([
                 'Code' => 200,
                 'Data' => $user->toArray(),
