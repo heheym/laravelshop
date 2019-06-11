@@ -125,6 +125,7 @@ class SongController extends Controller
             if($result){
                 return response()->json(['Code'=>200,'Msg'=>'入库成功','Data'=>null]);
             }
+            return response()->json(['Code'=>200,'Msg'=>'已入库','Data'=>null]);
         }
     }
 
