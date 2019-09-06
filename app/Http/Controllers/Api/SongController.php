@@ -134,7 +134,7 @@ class SongController extends Controller
     public function upload(Request $request)
     {
         $get = $_GET;
-        $post = $post;
+        $post = $_POST;
         return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
     }
 }
