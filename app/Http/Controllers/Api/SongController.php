@@ -11,7 +11,7 @@ use zgldh\QiniuStorage\QiniuStorage;
 
 class SongController extends Controller
 {
-    //
+    //用户获取歌曲数据接口
     public function index(Request $request)
     {
         $user = Auth::guard('api')->user();
@@ -69,6 +69,7 @@ class SongController extends Controller
         }
     }
 
+    //用户获得歌曲下载地址接口
     public function download(Request $request)
     {
         $Songid = $request->input('Songid');
@@ -89,7 +90,7 @@ class SongController extends Controller
 
     }
 
-
+    //用户成功下载歌曲接口
     public function downloadReturn(Request $request)
     {
         $user = Auth::guard('api')->user();
@@ -129,4 +130,11 @@ class SongController extends Controller
         }
     }
 
+    //前台上传文件更新数据库
+    public function upload(Request $request)
+    {
+        $get = $_GET;
+        $post = $post;
+        return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
+    }
 }

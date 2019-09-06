@@ -77,6 +77,11 @@ class SongController extends Controller
             ->body(view('song.create'));
     }
 
+    /**
+     * 导入excel文件
+     * @param Request $request
+     * @param Content $content
+     */
     public function store(Request $request,Content $content)
     {
         //按时间命名文件
@@ -108,8 +113,15 @@ class SongController extends Controller
         }else{
             admin_toastr(trans('数据库录入成功'),'success');
         }
+    }
 
-
+    /**
+     * 上传歌曲文件
+     * @param Request $request
+     */
+    public function upload(Request $request)
+    {
+        
     }
 
     /**
