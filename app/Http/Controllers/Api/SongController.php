@@ -135,6 +135,11 @@ class SongController extends Controller
     {
         $get = $_GET;
         $post = $_POST;
-        return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
+        if($get && $post){
+            return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
+        }else{
+            return response()->json(['Code'=>500,'Msg'=>'更新失败','Data'=>null]);
+        }
+
     }
 }
