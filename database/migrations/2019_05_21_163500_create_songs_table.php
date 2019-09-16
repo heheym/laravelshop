@@ -14,37 +14,56 @@ class CreateSongsTable extends Migration
     public function up()
     {
         Schema::create('songs', function (Blueprint $table) {
-            $table->integer('Songid');
-            $table->primary('Songid'); //总库id
-            $table->string('Songnum')->default('')->nullable();
-            $table->string('SongName')->default('')->nullable();
-            $table->string('Singer')->default('')->nullable();
-            $table->string('SongNameAlias')->default('')->nullable();
-            $table->string('SingerAlias')->default('')->nullable();
-            $table->tinyInteger('Langtype')->default(0)->nullable();
-            $table->tinyInteger('Songtype')->default(0)->nullable();
-            $table->tinyInteger('Songmark')->default(0)->nullable();
-            $table->tinyInteger('SoundType')->default(0)->nullable();
-            $table->string('AlbumName')->default('')->nullable();
-            $table->string('Pinyin')->default('')->nullable();
-            $table->string('AllPinyin')->default('')->nullable();
-            $table->integer('Wordcount')->default(0)->nullable(); //歌曲字数
-            $table->string('FistWordStrokes')->default('')->nullable();//歌曲的首字笔画
-            $table->string('Strokes')->default('')->nullable(); //歌曲的笔画
-            $table->tinyInteger('IssueAreaID')->default(0)->nullable(); //发行地区
-            $table->tinyInteger('SongCustomTypes')->default(0)->nullable();
-            $table->string('RecordCompany')->default('')->nullable();
-            $table->tinyInteger('singerArea')->default(0)->nullable();
-            $table->string('SingerPinyin')->default('')->nullable();
-            $table->string('SingerAllPinyin')->default('')->nullable();
-            $table->string('SingerSex')->default('')->nullable();
-            $table->string('SingerBH')->default('')->nullable(); //歌星笔画
-            $table->string('SingerOneWorkBH')->default('')->nullable();
-            $table->dateTime('UploadDate')->default(null)->nullable();
-            $table->integer('videoClass')->default(0)->nullable();
-            $table->string('Filename')->default('')->nullable();
-            $table->float('FileSize')->default(0)->nullable();
-            $table->integer('SongMid')->default(0)->nullable();
+            $table->primary('musicdbpk'); //总库id
+            $table->string('name')->default('')->nullable();
+            $table->string('singer')->default('')->nullable();
+            $table->tinyInteger('singerType')->default(0)->nullable();
+            $table->tinyInteger('location')->default(0)->nullable();
+            $table->string('namePinyin')->default('')->nullable();
+            $table->string('nameFullPingYing')->default('')->nullable();
+            $table->string('nameCharacts')->default('')->nullable();
+            $table->integer('nameWordLenght')->default(1)->nullable();
+            $table->integer('nameCharactsCount')->default(0)->nullable();
+            $table->string('singerNameFirst')->default('')->nullable();
+            $table->string('singerPingYin')->default('')->nullable();
+            $table->string('singerFullPingYing')->default('')->nullable();
+            $table->string('singerLocation')->default('')->nullable();
+            $table->string('singerGender')->default('')->nullable();
+            $table->string('singerCharacts')->default('')->nullable();
+            $table->string('chineseName')->default('')->nullable();
+            $table->integer('size')->default(0)->nullable();
+            $table->tinyInteger('language')->default(0)->nullable();
+            $table->tinyInteger('videoClass')->default(0)->nullable();
+            $table->string('recordCompany')->default('')->nullable();
+            $table->string('album')->default('')->nullable();
+            $table->tinyInteger('copyRight')->default(0)->nullable();
+            $table->tinyInteger('category')->default(0)->nullable();
+            $table->tinyInteger('type')->default(0)->nullable();
+            $table->tinyInteger('format')->default(0)->nullable();
+            $table->timestamp('uploadDateStr')->nullable();
+            $table->tinyInteger('audioClass')->default(0)->nullable();
+            $table->tinyInteger('isTaste')->default(0)->nullable();
+            $table->tinyInteger('isApp')->default(0)->nullable();
+            $table->string('sedName')->default('')->nullable();
+            $table->string('thiName')->default('')->nullable();
+            $table->string('localPath')->default('')->nullable();
+            $table->string('bugeId')->default('')->nullable();
+            $table->string('isRealCopy')->default('')->nullable();
+            $table->string('searchName1')->default('')->nullable();
+            $table->string('searchName2')->default('')->nullable();
+            $table->string('word')->default('')->nullable();
+            $table->string('introduce')->default('')->nullable();
+            $table->string('hasLogo')->default('')->nullable();
+            $table->integer('ranking')->default(0)->nullable();
+            $table->integer('musicdbpk')->default(0)->nullable();
+            $table->integer('musicMid')->default(0)->nullable();
+            $table->string('bscoin')->default(0)->nullable();
+            $table->string('ispf')->default('0')->nullable();
+            $table->string('isbsHide')->default('0')->nullable();
+            $table->string('variety')->default('')->nullable();
+            $table->tinyInteger('isbver')->default(0)->nullable();
+            $table->string('songnum')->default('')->nullable();
+
 
             $table->charset = 'utf8';
             $table->engine = 'InnoDB';
