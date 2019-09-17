@@ -134,7 +134,7 @@ class SongController extends Controller
     public function upload(Request $request)
     {
         $get = $_GET;
-        $post = $_POST;
+        $post = json_decode($_POST,true);
         $timestamp = !empty($get['timestamp'])?$get['timestamp']:'';
         $signature = !empty($get['signature'])?$get['signature']:'';
         if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
