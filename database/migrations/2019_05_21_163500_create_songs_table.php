@@ -19,7 +19,7 @@ class CreateSongsTable extends Migration
             $table->string('singer')->default('')->nullable();
             $table->tinyInteger('singerType')->default(0)->nullable();
             $table->tinyInteger('location')->default(0)->nullable();
-            $table->string('namePinyin')->default('')->nullable();
+            $table->string('namePingyin')->default('')->nullable();
             $table->string('nameFullPingYing')->default('')->nullable();
             $table->string('nameCharacts')->default('')->nullable();
             $table->integer('nameWordLenght')->default(1)->nullable();

@@ -140,7 +140,7 @@ class SongController extends Controller
         if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
             return response()->json(['Code'=>500,'Msg'=>'加密出错','Data'=>null]);
         }
-        $post = json_decode(file_get_contents("php://input"),true);
+        $post = json_decode(urldecode(file_get_contents("php://input")),true);
         if($get && $post){
             $result = DB::table('songs')->insert($post);
             if($result){
