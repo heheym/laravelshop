@@ -134,12 +134,13 @@ class SongController extends Controller
     public function upload(Request $request)
     {
         $get = $_GET;
-        $post = json_decode(file_get_contents("php://input"),true);
+
         $timestamp = !empty($get['timestamp'])?$get['timestamp']:'';
         $signature = !empty($get['signature'])?$get['signature']:'';
         if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
             return response()->json(['Code'=>500,'Msg'=>'加密出错','Data'=>null]);
         }
+        $post = json_decode(file_get_contents("php://input"),true);
         if($get && $post){
             $result = DB::table('songs')->insert($post);
             if($result){
