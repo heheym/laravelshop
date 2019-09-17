@@ -142,7 +142,13 @@ class SongController extends Controller
         }
         $post = json_decode(urldecode(file_get_contents("php://input")),true);
         if($get && $post){
-            $result = DB::table('songs')->insert($post);
+            $exists = DB::table('songs')->where('musicdbpk',$post['musicdbpk'])->exists();
+            if($exists){
+                $result = DB::table('songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
+            }else{
+                $result = DB::table('songs')->insert($post);
+            }
+
             if($result){
                 return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
             }else{
