@@ -148,12 +148,9 @@ class SongController extends Controller
             }else{
                 $result = DB::table('songs')->insert($post);
             }
+            
+            return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
 
-            if($result){
-                return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
-            }else{
-                return response()->json(['Code'=>500,'Msg'=>'更新失败','Data'=>null]);
-            }
 
         }else{
             return response()->json(['Code'=>500,'Msg'=>'数据不正确','Data'=>null]);
