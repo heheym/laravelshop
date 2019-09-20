@@ -130,7 +130,7 @@ class SongController extends Controller
         }
     }
 
-    //前台上传文件更新数据库
+    //前台上传歌曲文件更新数据库
     public function upload(Request $request)
     {
         $get = $_GET;
@@ -148,8 +148,64 @@ class SongController extends Controller
             }else{
                 $result = DB::table('songs')->insert($post);
             }
-            
+
             return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
+
+
+        }else{
+            return response()->json(['Code'=>500,'Msg'=>'数据不正确','Data'=>null]);
+        }
+
+    }
+
+    //禁播
+    public function ban_songs(Request $request)
+    {
+        $get = $_GET;
+
+        $timestamp = !empty($get['timestamp'])?$get['timestamp']:'';
+        $signature = !empty($get['signature'])?$get['signature']:'';
+        if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
+            return response()->json(['Code'=>500,'Msg'=>'加密出错','Data'=>null]);
+        }
+        $post = json_decode(urldecode(file_get_contents("php://input")),true);
+        if($get && $post){
+            $exists = DB::table('ban_songs')->where('musicdbpk',$post['musicdbpk'])->exists();
+            if($exists){
+                $result = DB::table('ban_songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
+            }else{
+                $result = DB::table('ban_songs')->insert($post);
+            }
+
+            return response()->json(['Code'=>200,'Msg'=>'已更新禁播歌曲数据','Data'=>null]);
+
+
+        }else{
+            return response()->json(['Code'=>500,'Msg'=>'数据不正确','Data'=>null]);
+        }
+
+    }
+
+    //高危
+    public function danger_songs(Request $request)
+    {
+        $get = $_GET;
+
+        $timestamp = !empty($get['timestamp'])?$get['timestamp']:'';
+        $signature = !empty($get['signature'])?$get['signature']:'';
+        if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
+            return response()->json(['Code'=>500,'Msg'=>'加密出错','Data'=>null]);
+        }
+        $post = json_decode(urldecode(file_get_contents("php://input")),true);
+        if($get && $post){
+            $exists = DB::table('danger_songs')->where('musicdbpk',$post['musicdbpk'])->exists();
+            if($exists){
+                $result = DB::table('danger_songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
+            }else{
+                $result = DB::table('danger_songs')->insert($post);
+            }
+
+            return response()->json(['Code'=>200,'Msg'=>'已更新高危歌曲数据','Data'=>null]);
 
 
         }else{

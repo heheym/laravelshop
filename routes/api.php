@@ -34,6 +34,8 @@ Route::get('/alipay','Api\PayController@alipay'); //支付宝支付
 Route::get('/sms','Api\SmsController@index'); //获取短信验证码接口
 Route::get('register', 'Auth\RegisterController@register');  //api 注册 by ma
 Route::get('login', 'Auth\LoginController@login');  //api 登录 by ma
-Route::post('/song/upload', 'Api\SongController@upload');  //api 登录 by ma
+Route::post('/song/upload', 'Api\SongController@upload');  //前台上传歌曲文件更新数据库
+Route::post('/song/ban_songs', 'Api\SongController@ban_songs');  //禁播
+Route::post('/song/danger_songs', 'Api\SongController@danger_songs');  //高危
 
 
