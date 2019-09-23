@@ -46,7 +46,8 @@ trait AuthenticatesUsers
             $user = $this->guard()->user();
             $user->generateToken();
             $user->expire = 43200;
-            $uploadDate = DB::table('songs')->orderBy('UploadDate','desc')->value('UploadDate');
+            $uploadDate = DB::table('songs')->orderBy('uploadDateStr','desc')->value('uploadDateStr
+');
             $user->UploadDate = $uploadDate;
             $user->date = date('Y-m-d H:i:s');
             return response()->json([

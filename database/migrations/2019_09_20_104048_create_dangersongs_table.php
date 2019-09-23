@@ -16,7 +16,7 @@ class CreateDangersongsTable extends Migration
         Schema::create('danger_songs', function (Blueprint $table) {
             $table->string('name');
             $table->string('singer');
-            $table->string('langtype');
+            $table->string('language');
             $table->string('recordcompany');
             $table->integer('musicdbpk');
             $table->timestamp('uploadDateStr');
