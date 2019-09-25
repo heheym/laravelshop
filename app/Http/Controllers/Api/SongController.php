@@ -25,7 +25,7 @@ class SongController extends Controller
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
                     ->mergeBindings($subQuery)
-                    ->groupBy('t.SongMid')
+                    ->groupBy('t.musicMid')
                     ->paginate(20);
             }
             //高清
@@ -37,7 +37,7 @@ class SongController extends Controller
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuer->toSql()}) as t"))
                     ->mergeBindings($subQuer)
-                    ->groupBy('t.SongMid')
+                    ->groupBy('t.musicMid')
                     ->paginate(20);
             }
         }else{
@@ -47,7 +47,7 @@ class SongController extends Controller
                 ->limit(9999999999);
             $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
                 ->mergeBindings($subQuery)
-                ->groupBy('t.SongMid')
+                ->groupBy('t.musicMid')
                 ->paginate(20);
             //高清
             if($user->rank==1){
@@ -57,7 +57,7 @@ class SongController extends Controller
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
                     ->mergeBindings($subQuery)
-                    ->groupBy('t.SongMid')
+                    ->groupBy('t.musicMid')
                     ->paginate(20);
             }
         }
@@ -222,15 +222,23 @@ class SongController extends Controller
     //获取禁播列表
     public function get_ban_songs()
     {
-        $data = DB::table('ban_songs')->get();
-        return response()->json(['Code'=>200,'Msg'=>'','Data'=>$data]);
+        $data = DB::table('ban_songs')->paginate(10);
+        if($data){
+            $data= $data->toArray();
+            $data = array_merge(['Code'=>200],$data);
+            return response()->json($data);
+        }
     }
 
     //获取高危列表
     public function get_danger_songs()
     {
-        $data = DB::table('danger_songs')->get();
-        return response()->json(['Code'=>200,'Msg'=>'','Data'=>$data]);
+        $data = DB::table('danger_songs')->paginate(20);
+        if($data){
+            $data= $data->toArray();
+            $data = array_merge(['Code'=>200],$data);
+            return response()->json($data);
+        }
     }
 
 }
