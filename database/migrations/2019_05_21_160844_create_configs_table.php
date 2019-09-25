@@ -17,6 +17,7 @@ class CreateConfigsTable extends Migration
             $table->increments('id');
             $table->timestamps();
             $table->string('version');
+            $table->string('Urlstr');
         });
     }
 

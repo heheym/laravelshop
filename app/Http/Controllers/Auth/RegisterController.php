@@ -56,7 +56,7 @@ class RegisterController extends Controller
 //            'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|regex:/1[0-9]{10}/|unique:users',
             'password' => 'required|string|min:5',
-            'code' => "required|in:".Cache::get($data['phone'])
+//            'code' => "required|in:".Cache::get($data['phone'])
         ],['code.required'=>'验证码不能为空',
             'code.in'=>'验证码不正确']);
     }
@@ -69,11 +69,20 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $data['vipState'] = 0;
+        $data['vipXgStartDay'] = 7;
+        $data['vipStartTime'] = date('Y-m-d H:i:s');
+        $data['vipTime'] = date('Y-m-d H:i:s',strtotime("+7 days"));
+
         return User::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
             'password' => bcrypt($data['password']),
             'mac' => $data['mac'],
+            'vipState' => $data['vipState'],
+            'vipXgStartDay' => $data['vipXgStartDay'],
+            'vipStartTime' => $data['vipStartTime'],
+            'vipTime' => $data['vipTime'],
         ]);
     }
 

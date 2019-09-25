@@ -144,7 +144,12 @@ class SongController extends Controller
         if($get && $post){
             $exists = DB::table('songs')->where('musicdbpk',$post['musicdbpk'])->exists();
             if($exists){
-                $result = DB::table('songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
+                if($post['isApp']>0){
+
+                }else{
+                    $result = DB::table('songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
+                }
+
             }else{
                 $result = DB::table('songs')->insert($post);
             }
@@ -158,7 +163,7 @@ class SongController extends Controller
 
     }
 
-    //禁播
+    //添加/更新禁播
     public function ban_songs(Request $request)
     {
         $get = $_GET;
@@ -186,7 +191,7 @@ class SongController extends Controller
 
     }
 
-    //高危
+    //添加/更新高危
     public function danger_songs(Request $request)
     {
         $get = $_GET;
@@ -213,4 +218,19 @@ class SongController extends Controller
         }
 
     }
+
+    //获取禁播列表
+    public function get_ban_songs()
+    {
+        $data = DB::table('ban_songs')->get();
+        return response()->json(['Code'=>200,'Msg'=>'','Data'=>$data]);
+    }
+
+    //获取高危列表
+    public function get_danger_songs()
+    {
+        $data = DB::table('danger_songs')->get();
+        return response()->json(['Code'=>200,'Msg'=>'','Data'=>$data]);
+    }
+
 }

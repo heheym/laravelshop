@@ -21,6 +21,10 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->tinyInteger('vipState')->default(0);  //会员状态
+            $table->tinyInteger('vipXgStartDay')->default(7);  //
+            $table->timestamp('vipStartTime');  //会员开始时间
+            $table->timestamp('vipTime');  //会员到期时间
             $table->string('api_token', 60)->unique()->nullable();
         });
     }
