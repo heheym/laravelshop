@@ -21,7 +21,7 @@ class CreateBansongTable extends Migration
 
             $table->charset = 'utf8';
             $table->engine = 'InnoDB';
-            $table->collation = 'utf8_unicode_ci';
+            $table->collation = 'utf8_general_ci';
 
 
         });

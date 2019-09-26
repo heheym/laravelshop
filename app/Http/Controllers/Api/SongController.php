@@ -251,4 +251,24 @@ class SongController extends Controller
         }
     }
 
+    //提交补歌
+    public function add_songs()
+    {
+        $user = Auth::guard('api')->user();
+        $post = $_GET;
+        unset($post['api_token']);
+        if($post){
+            DB::table('add_songs')->insert($post);
+            $exists = DB::table('songs')->where(['name'=>$post['songname'],'singer'=>$post['singer']])
+                ->get();
+            if($exists){
+
+            }
+            return response()->json(['Code'=>200,'Msg'=>'已更新补歌数据','Data'=>null]);
+        }else{
+            return response()->json(['Code'=>500,'Msg'=>'数据不正确','Data'=>null]);
+        }
+
+    }
+
 }
