@@ -16,11 +16,15 @@ class SongController extends Controller
     {
         $user = Auth::guard('api')->user();
         $data = $request->all();
+        $data['isbver'] = isset($data['isbver'])?$data['isbver']:0;
+        $data['isApp'] = isset($data['isApp'])?$data['isApp']:0;
         if(!empty($data['starttime'])){
             //普清
             if($user->rank==0){
                 $subQuery = DB::table(DB::raw('songs'))
-                    ->where('UploadDate','>',$data['starttime'])
+                    ->where('uploadDateStr','>',$data['starttime'])
+                    ->where('isbver',$data['isbver'])
+                    ->where('isApp',$data['isApp'])
                     ->orderBy('videoClass', 'asc')
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
@@ -32,7 +36,9 @@ class SongController extends Controller
             if($user->rank==1){
                 //普清
                 $subQuer = DB::table(DB::raw('songs'))
-                    ->where('UploadDate','>',$data['starttime'])
+                    ->where('uploadDateStr','>',$data['starttime'])
+                    ->where('isbver',$data['isbver'])
+                    ->where('isApp',$data['isApp'])
                     ->orderBy('videoClass', 'desc')
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuer->toSql()}) as t"))
@@ -43,6 +49,8 @@ class SongController extends Controller
         }else{
             //普清
             $subQuery = DB::table(DB::raw('songs'))
+                ->where('isbver',$data['isbver'])
+                ->where('isApp',$data['isApp'])
                 ->orderBy('videoClass', 'asc')
                 ->limit(9999999999);
             $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
@@ -53,6 +61,8 @@ class SongController extends Controller
             if($user->rank==1){
                 //普清
                 $subQuery = DB::table(DB::raw('songs'))
+                    ->where('isbver',$data['isbver'])
+                    ->where('isApp',$data['isApp'])
                     ->orderBy('videoClass', 'desc')
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
@@ -233,7 +243,7 @@ class SongController extends Controller
     //获取高危列表
     public function get_danger_songs()
     {
-        $data = DB::table('danger_songs')->paginate(20);
+        $data = DB::table('danger_songs')->paginate(10);
         if($data){
             $data= $data->toArray();
             $data = array_merge(['Code'=>200],$data);
