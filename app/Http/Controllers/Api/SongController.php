@@ -255,20 +255,60 @@ class SongController extends Controller
     public function add_songs()
     {
         $user = Auth::guard('api')->user();
-        $post = $_GET;
-        unset($post['api_token']);
-        if($post){
-            DB::table('add_songs')->insert($post);
-            $exists = DB::table('songs')->where(['name'=>$post['songname'],'singer'=>$post['singer']])
-                ->get();
-            if($exists){
-
+        $get = $_GET;
+        if($get){
+            if(empty($get['singer']) || empty($get['songname'])){
+                return response()->json(['Code'=>500,'Msg'=>'数据不正确','Data'=>null]);
+            }
+            $data = ['singer'=>$get['singer'],
+                    'songname'=>$get['songname'],
+                    'userid'=>$user->id,
+                    'state'=>0,
+                    'date'=>date('Y-m-d H:i:s')
+            ];
+            $id = DB::table('add_songs')->insertGetId($data);
+            $exists = DB::table('songs')->where(['name'=>$get['songname'],'singer'=>$get['singer']])
+                ->first();
+            if(empty($id)){
+                return response()->json(['Code'=>500,'Msg'=>'更新失败','Data'=>null]);
+            }
+            if(!empty($exists->musicdbpk)){
+                $result = DB::table('add_songs')->where('bugeId',$id)->update(['state'=>2,'musicdbpk'=>$exists->musicdbpk]);
+                if($result){
+                    return response()->json(['Code'=>200,'Msg'=>'已更新补歌数据','Data'=>null]);
+                }else{
+                    return response()->json(['Code'=>500,'Msg'=>'更新失败','Data'=>null]);
+                }
             }
             return response()->json(['Code'=>200,'Msg'=>'已更新补歌数据','Data'=>null]);
+
         }else{
             return response()->json(['Code'=>500,'Msg'=>'数据不正确','Data'=>null]);
         }
 
     }
 
+    //获取补歌
+    public function get_add_songs()
+    {
+        $user = Auth::guard('api')->user();
+        $get = $_GET;
+        if(!empty($get['starttime'])){
+            $data = DB::table('add_songs')->where('date','>',$get['starttime'])
+                ->where('userid',$user->id)->paginate(10);
+            if($data){
+                $data= $data->toArray();
+                $data = array_merge(['Code'=>200],$data);
+                return response()->json($data);
+            }
+        }else{
+            $data = DB::table('add_songs')->where('userid',$user->id)->paginate(10);
+            if($data){
+                $data= $data->toArray();
+                $data = array_merge(['Code'=>200],$data);
+                return response()->json($data);
+            }
+        }
+
+    }
 }
