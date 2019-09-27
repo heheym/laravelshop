@@ -232,7 +232,11 @@ class SongController extends Controller
     //获取禁播列表
     public function get_ban_songs()
     {
-        $data = DB::table('ban_songs')->paginate(10);
+        if(!empty($_GET['starttime'])){
+            $data = DB::table('ban_songs')->where('uploadDateStr','>',$_GET['starttime'])->paginate(10);
+        }else{
+            $data = DB::table('ban_songs')->paginate(10);
+        }
         if($data){
             $data= $data->toArray();
             $data = array_merge(['Code'=>200],$data);
@@ -243,7 +247,11 @@ class SongController extends Controller
     //获取高危列表
     public function get_danger_songs()
     {
-        $data = DB::table('danger_songs')->paginate(10);
+        if(!empty($_GET['starttime'])){
+            $data = DB::table('danger_songs')->where('uploadDateStr','>',$_GET['starttime'])->paginate(10);
+        }else{
+            $data = DB::table('danger_songs')->paginate(10);
+        }
         if($data){
             $data= $data->toArray();
             $data = array_merge(['Code'=>200],$data);
