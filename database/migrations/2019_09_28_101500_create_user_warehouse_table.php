@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersSongsTable extends Migration
+class CreateUserWarehouseTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,15 @@ class CreateUsersSongsTable extends Migration
      */
     public function up()
     {
-        Schema::create('users_songs', function (Blueprint $table) {
+        Schema::create('user_warehouse', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('userid');   //用户id
             $table->integer('musicdbpk');   //歌曲总库id
             $table->timestamp('date');   //日期
+
+            $table->charset = 'utf8';
+            $table->engine = 'InnoDB';
+            $table->collation = 'utf8_general_ci';
         });
     }
 
@@ -28,6 +32,6 @@ class CreateUsersSongsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_songs');
+        Schema::dropIfExists('user_warehouse');
     }
 }

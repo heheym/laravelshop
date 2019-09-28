@@ -233,9 +233,9 @@ class SongController extends Controller
     public function get_ban_songs()
     {
         if(!empty($_GET['starttime'])){
-            $data = DB::table('ban_songs')->where('uploadDateStr','>',$_GET['starttime'])->paginate(10);
+            $data = DB::table('ban_songs')->where('uploadDateStr','>',$_GET['starttime'])->paginate(60);
         }else{
-            $data = DB::table('ban_songs')->paginate(10);
+            $data = DB::table('ban_songs')->paginate(60);
         }
         if($data){
             $data= $data->toArray();
@@ -248,9 +248,9 @@ class SongController extends Controller
     public function get_danger_songs()
     {
         if(!empty($_GET['starttime'])){
-            $data = DB::table('danger_songs')->where('uploadDateStr','>',$_GET['starttime'])->paginate(10);
+            $data = DB::table('danger_songs')->where('uploadDateStr','>',$_GET['starttime'])->paginate(60);
         }else{
-            $data = DB::table('danger_songs')->paginate(10);
+            $data = DB::table('danger_songs')->paginate(60);
         }
         if($data){
             $data= $data->toArray();
@@ -259,7 +259,7 @@ class SongController extends Controller
         }
     }
 
-    //提交补歌
+    //用户提交补歌
     public function add_songs()
     {
         $user = Auth::guard('api')->user();
@@ -296,7 +296,7 @@ class SongController extends Controller
 
     }
 
-    //获取补歌
+    //获取补歌列表
     public function get_add_songs()
     {
         $user = Auth::guard('api')->user();
@@ -304,19 +304,33 @@ class SongController extends Controller
         if(!empty($get['starttime'])){
             $data = DB::table('add_songs')->where('date','>',$get['starttime'])
                 ->where('userid',$user->id)->paginate(10);
-            if($data){
-                $data= $data->toArray();
-                $data = array_merge(['Code'=>200],$data);
-                return response()->json($data);
-            }
         }else{
             $data = DB::table('add_songs')->where('userid',$user->id)->paginate(10);
-            if($data){
-                $data= $data->toArray();
-                $data = array_merge(['Code'=>200],$data);
-                return response()->json($data);
-            }
+
+        }
+        if($data){
+            $data= $data->toArray();
+            $data = array_merge(['Code'=>200],$data);
+            return response()->json($data);
+        }
+    }
+
+    //获取用户已下载歌曲列表
+    public function get_users_songs()
+    {
+        $user = Auth::guard('api')->user();
+        $get = $_GET;
+        if(!empty($get['starttime'])){
+            $data = DB::table('users_songs')->where('date','>',$get['starttime'])
+                ->where('userid',$user->id)->paginate(10);
+        }else{
+            $data = DB::table('users_songs')->where('userid',$user->id)->paginate(10);
         }
 
+        if($data){
+            $data= $data->toArray();
+            $data = array_merge(['Code'=>200],$data);
+            return response()->json($data);
+        }
     }
 }
