@@ -100,28 +100,32 @@ class SongController extends Controller
 
     }
 
-    //用户成功下载歌曲接口
+    //用户成功下载/入库歌曲接口
     public function downloadReturn(Request $request)
     {
         $user = Auth::guard('api')->user();
         $data = $request->all();
-        if(!$data['Songid']){
-            return response()->json(['Code'=>500,'Msg'=>'id不能为空','Data'=>null]);
+        if(empty($data['Songid'])||empty($data['param'])){
+            return response()->json(['Code'=>500,'Msg'=>'参数错误','Data'=>null]);
         }
+        $date = date('Y-m-d H:i:s');
         //成功下载
         if($data['param']==1){
+            if(!empty($data['bugeId'])){
+                DB::table('add_songs')->where('bugeId',$data['bugeId'])->update(['state'=>3]);
+            }
             $result = DB::table('users_songs')->insert(['musicdbpk'=>$data['Songid'],
-                'userid'=>$user->id,'date'=>date('Y-m-d H:i:s')] );
+                'userid'=>$user->id,'date'=>$date] );
             if($result){
-                return response()->json(['Code'=>200,'Msg'=>'下载成功','Data'=>null]);
+                return response()->json(['Code'=>200,'Msg'=>'下载成功','Data'=>['date'=>$date]]);
             }
         }
         //成功入库
         if($data['param']==2){
             $result = DB::table('user_warehouse')->insert(['musicdbpk'=>$data['Songid'],
-                'userid'=>$user->id,'date'=>date('Y-m-d H:i:s')]);
+                'userid'=>$user->id,'date'=>$date]);
             if($result){
-                return response()->json(['Code'=>200,'Msg'=>'入库成功','Data'=>null]);
+                return response()->json(['Code'=>200,'Msg'=>'入库成功','Data'=>['date'=>$date]]);
             }
             return response()->json(['Code'=>200,'Msg'=>'已入库','Data'=>null]);
         }
@@ -149,8 +153,8 @@ class SongController extends Controller
             }else{
                 if(!empty($post['bugeId'])){
                     DB::table('add_songs')->where('bugeId',$post['bugeId'])->update(['state'=>2,'musicdbpk'=>$post['musicdbpk']]);
+                    unset($post['bugeId']);
                 }
-                unset($post['bugeId']);
                 $result = DB::table('songs')->insert($post);
             }
 
@@ -292,9 +296,9 @@ class SongController extends Controller
         $get = $_GET;
         if(!empty($get['starttime'])){
             $data = DB::table('add_songs')->where('date','>',$get['starttime'])
-                ->where('userid',$user->id)->paginate(10);
+                ->where('userid',$user->id)->paginate(60);
         }else{
-            $data = DB::table('add_songs')->where('userid',$user->id)->paginate(10);
+            $data = DB::table('add_songs')->where('userid',$user->id)->paginate(60);
 
         }
         if($data){
@@ -311,9 +315,9 @@ class SongController extends Controller
         $get = $_GET;
         if(!empty($get['starttime'])){
             $data = DB::table('users_songs')->where('date','>',$get['starttime'])
-                ->where('userid',$user->id)->paginate(10);
+                ->where('userid',$user->id)->paginate(60);
         }else{
-            $data = DB::table('users_songs')->where('userid',$user->id)->paginate(10);
+            $data = DB::table('users_songs')->where('userid',$user->id)->paginate(60);
         }
 
         if($data){
@@ -330,9 +334,9 @@ class SongController extends Controller
         $get = $_GET;
         if(!empty($get['starttime'])){
             $data = DB::table('user_warehouse')->where('date','>',$get['starttime'])
-                ->where('userid',$user->id)->paginate(10);
+                ->where('userid',$user->id)->paginate(60);
         }else{
-            $data = DB::table('user_warehouse')->where('userid',$user->id)->paginate(10);
+            $data = DB::table('user_warehouse')->where('userid',$user->id)->paginate(60);
         }
 
         if($data){

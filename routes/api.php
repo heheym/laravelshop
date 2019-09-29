@@ -30,6 +30,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/song/get_add_songs', 'Api\SongController@get_add_songs');  //获取补歌表
 
     Route::get('/song/get_users_songs', 'Api\SongController@get_users_songs');  //获取用户已下载歌曲列表
+    Route::get('/song/get_user_warehouse', 'Api\SongController@get_user_warehouse');  //获取用户已入库歌曲列表
 });
 
 //url，需要加一个api，如：192.168.10.227:81/api/login
