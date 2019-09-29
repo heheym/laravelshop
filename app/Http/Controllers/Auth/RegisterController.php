@@ -73,7 +73,7 @@ class RegisterController extends Controller
         $data['vipXgStartDay'] = 7;
         $data['vipStartTime'] = date('Y-m-d H:i:s');
         $data['vipTime'] = date('Y-m-d H:i:s',strtotime("+7 days"));
-
+        $data['download'] = 1;
         return User::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
@@ -83,6 +83,7 @@ class RegisterController extends Controller
             'vipXgStartDay' => $data['vipXgStartDay'],
             'vipStartTime' => $data['vipStartTime'],
             'vipTime' => $data['vipTime'],
+            'download' => $data['download']
         ]);
     }
 

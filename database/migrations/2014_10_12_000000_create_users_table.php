@@ -26,6 +26,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('vipStartTime');  //会员开始时间
             $table->timestamp('vipTime');  //会员到期时间
             $table->string('api_token', 60)->unique()->nullable();
+            $table->tinyInteger('download')->default(1);  //会员到期时间
         });
     }
 
