@@ -296,10 +296,9 @@ class SongController extends Controller
         $get = $_GET;
         if(!empty($get['starttime'])){
             $data = DB::table('add_songs')->where('date','>',$get['starttime'])
-                ->where('userid',$user->id)->paginate(60);
+                ->where('userid',$user->id)->orderBy('date','desc')->paginate(60);
         }else{
-            $data = DB::table('add_songs')->where('userid',$user->id)->paginate(60);
-
+            $data = DB::table('add_songs')->where('userid',$user->id)->orderBy('date','desc')->paginate(60);
         }
         if($data){
             $data= $data->toArray();
