@@ -17,10 +17,10 @@ class SongController extends Controller
         $user = Auth::guard('api')->user();
         $data = $request->all();
         $map = array();
-        if(!empty($data['isbver'])){
+        if(isset($data['isbver'])){
             $map['isbver'] = $data['isbver'];
         }
-        if(!empty($data['isApp'])){
+        if(isset($data['isApp'])){
             $map['isApp'] = $data['isApp'];
         }
 
