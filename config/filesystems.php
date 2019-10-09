@@ -80,7 +80,7 @@ return [
             ],
             'access_key'=> 'SXVcilAju8iSGyxjdficeepfDTj0kuEIynjM_ZYT',  //AccessKey
             'secret_key'=> 'hGVsf8o8EswWsaxxXWvRFtJc_IJ9nRS2-MdeiFUM',  //SecretKey
-            'bucket'    => 'delphi',  //Bucket名字
+            'bucket'    => 'video-sh',  //Bucket名字
             'notify_url'=> '',  //持久化处理回调地址
             'access'    => 'private',  //空间访问控制 public 或 private
             'hotlink_prevention_key' => '', // CDN 时间戳防盗链的 key设置为 null 则不启用本功能。

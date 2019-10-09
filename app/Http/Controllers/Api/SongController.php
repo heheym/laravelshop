@@ -16,15 +16,20 @@ class SongController extends Controller
     {
         $user = Auth::guard('api')->user();
         $data = $request->all();
-        $data['isbver'] = isset($data['isbver'])?$data['isbver']:0;
-        $data['isApp'] = isset($data['isApp'])?$data['isApp']:0;
+        $map = array();
+        if(!empty($data['isbver'])){
+            $map['isbver'] = $data['isbver'];
+        }
+        if(!empty($data['isApp'])){
+            $map['isApp'] = $data['isApp'];
+        }
+
         if(!empty($data['starttime'])){
             //普清
             if($user->rank==0){
                 $subQuery = DB::table(DB::raw('songs'))
                     ->where('uploadDateStr','>',$data['starttime'])
-                    ->where('isbver',$data['isbver'])
-                    ->where('isApp',$data['isApp'])
+                    ->where($map)
                     ->orderBy('videoClass', 'asc')
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
@@ -37,8 +42,7 @@ class SongController extends Controller
                 //普清
                 $subQuer = DB::table(DB::raw('songs'))
                     ->where('uploadDateStr','>',$data['starttime'])
-                    ->where('isbver',$data['isbver'])
-                    ->where('isApp',$data['isApp'])
+                    ->where($map)
                     ->orderBy('videoClass', 'desc')
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuer->toSql()}) as t"))
@@ -47,10 +51,10 @@ class SongController extends Controller
                     ->paginate(20);
             }
         }else{
+
             //普清
             $subQuery = DB::table(DB::raw('songs'))
-                ->where('isbver',$data['isbver'])
-                ->where('isApp',$data['isApp'])
+                ->where($map)
                 ->orderBy('videoClass', 'asc')
                 ->limit(9999999999);
             $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
@@ -61,8 +65,7 @@ class SongController extends Controller
             if($user->rank==1){
                 //普清
                 $subQuery = DB::table(DB::raw('songs'))
-                    ->where('isbver',$data['isbver'])
-                    ->where('isApp',$data['isApp'])
+                    ->where($map)
                     ->orderBy('videoClass', 'desc')
                     ->limit(9999999999);
                 $data = DB::table(DB::raw("({$subQuery->toSql()}) as t"))
@@ -88,13 +91,15 @@ class SongController extends Controller
         }
 
         $disk = QiniuStorage::disk('qiniu');
-        $fileName = DB::table('songs')->where('Songid',$Songid)->value('Filename');
+
+        $fileName = DB::table('songs')->where('musicdbpk',$Songid)->value('localPath');
 
         $exist = $disk->exists($fileName);
         if(!$exist){
             return response()->json(['Code'=>500,'Msg'=>'文件不存在','Data'=>null]);
         }
-        $data = $disk->privateDownloadUrl($fileName,['expires'=>3600]);
+//        $data = $disk->downloadUrl($fileName);
+        $data = $disk->privateDownloadUrl($fileName);
 
         return response()->json(['Code'=>200,'Data'=>$data]);
 
