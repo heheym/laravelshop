@@ -90,16 +90,19 @@ class SongController extends Controller
             return response()->json(['Code'=>500,'Msg'=>'id不能为空','Data'=>null]);
         }
 
-        $disk = QiniuStorage::disk('qiniu');
-
+//        $disk = QiniuStorage::disk('qiniu');
+        $disk = \Storage::disk('qiniu');
+//        $disk->exists('file.jpg');
+        
         $fileName = DB::table('songs')->where('musicdbpk',$Songid)->value('localPath');
 
         $exist = $disk->exists($fileName);
+
         if(!$exist){
             return response()->json(['Code'=>500,'Msg'=>'文件不存在','Data'=>null]);
         }
-//        $data = $disk->downloadUrl($fileName);
-        $data = $disk->privateDownloadUrl($fileName);
+        $data = $disk->downloadUrl($fileName);
+//        $data = $disk->privateDownloadUrl($fileName);
 
         return response()->json(['Code'=>200,'Data'=>$data]);
 
