@@ -23,7 +23,9 @@ class SongController extends Controller
         if(isset($data['isApp'])){
             $map['isApp'] = $data['isApp'];
         }
-
+        if(isset($data['musicdbpk'])){
+            $map['musicdbpk'] = $data['musicdbpk'];
+        }
         if(!empty($data['starttime'])){
             //普清
             if($user->rank==0){
@@ -302,11 +304,15 @@ class SongController extends Controller
     {
         $user = Auth::guard('api')->user();
         $get = $_GET;
+        $map = array();
+        if(isset($get['state'])){
+            $map['state'] = $get['state'];
+        }
         if(!empty($get['starttime'])){
             $data = DB::table('add_songs')->where('date','>',$get['starttime'])
-                ->where('userid',$user->id)->orderBy('date','desc')->paginate(60);
+                ->where('userid',$user->id)->where($map)->orderBy('date','desc')->paginate(60);
         }else{
-            $data = DB::table('add_songs')->where('userid',$user->id)->orderBy('date','desc')->paginate(60);
+            $data = DB::table('add_songs')->where('userid',$user->id)->where($map)->orderBy('date','desc')->paginate(60);
         }
         if($data){
             $data= $data->toArray();

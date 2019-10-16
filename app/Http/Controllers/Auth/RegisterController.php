@@ -74,6 +74,7 @@ class RegisterController extends Controller
         $data['vipStartTime'] = date('Y-m-d H:i:s');
         $data['vipTime'] = date('Y-m-d H:i:s',strtotime("+7 days"));
         $data['download'] = 1;
+        $data['add'] = 0;
         return User::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
