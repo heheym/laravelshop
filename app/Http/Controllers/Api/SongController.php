@@ -92,9 +92,9 @@ class SongController extends Controller
             return response()->json(['Code'=>500,'Msg'=>'id不能为空','Data'=>null]);
         }
 
-//        $disk = QiniuStorage::disk('qiniu');
+
         $disk = \Storage::disk('qiniu');
-//        $disk->exists('file.jpg');
+
         
         $fileName = DB::table('songs')->where('musicdbpk',$Songid)->value('localPath');
 
@@ -104,7 +104,7 @@ class SongController extends Controller
             return response()->json(['Code'=>500,'Msg'=>'文件不存在','Data'=>null]);
         }
         $data = $disk->downloadUrl($fileName);
-//        $data = $disk->privateDownloadUrl($fileName);
+
 
         return response()->json(['Code'=>200,'Data'=>$data]);
 
@@ -359,4 +359,29 @@ class SongController extends Controller
         }
     }
 
+    //用户删除禁播歌曲
+    public function delete_ban(){
+        $user = Auth::guard('api')->user();
+        $get = $_GET;
+        $get['userId'] = $user->id;
+        unset($get['api_token']);
+        $result = DB::table('delete_ban')->insert($get); 
+        if($result){
+            return response()->json(['Code'=>200,'Msg'=>'记录删除禁播歌曲成功','Data'=>null]);
+        }
+        return response()->json(['Code'=>500,'Msg'=>'记录删除禁播歌曲失败','Data'=>null]);
+    }
+
+    //用户删除高危歌曲
+    public function delete_danger(){
+        $user = Auth::guard('api')->user();
+        $get = $_GET;
+        $get['userId'] = $user->id;
+        unset($get['api_token']);
+        $result = DB::table('delete_danger')->insert($get);
+        if($result){
+            return response()->json(['Code'=>200,'Msg'=>'记录删除高危歌曲成功','Data'=>null]);
+        }
+        return response()->json(['Code'=>500,'Msg'=>'记录删除高危歌曲失败','Data'=>null]);
+    }
 }

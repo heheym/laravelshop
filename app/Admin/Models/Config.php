@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Admin;
+namespace App\Admin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Song extends Model
+class Config extends Model
 {
     //
 }

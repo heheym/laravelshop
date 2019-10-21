@@ -19,5 +19,10 @@ Route::group([
 
     $router->resource('config',ConfigController::class);  //系统配置
     $router->resource('user',UserController::class);  //用户
+    $router->resource('addsong', AddSongController::class); //补歌管理
+    $router->resource('bansong', BanSongController::class); //禁播管理
+    $router->resource('dangersong', DangerSongController::class); //高危管理
+
+
 });
 

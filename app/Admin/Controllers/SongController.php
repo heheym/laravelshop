@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\Admin\Song;
+use App\Admin\Models\Song;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -17,6 +17,16 @@ use zgldh\QiniuStorage\QiniuStorage;
 class SongController extends Controller
 {
     use HasResourceActions;
+
+    public function update($id)
+    {
+        return $this->editForm()->update($id);
+    }
+
+    public function destroy($id)
+    {
+        return $this->editForm()->destroy($id);
+    }
 
     /**
      * Index interface.
@@ -59,7 +69,7 @@ class SongController extends Controller
         return $content
             ->header('Edit')
             ->description('description')
-            ->body($this->form()->edit($id));
+            ->body($this->editForm()->edit($id));
     }
 
     /**
@@ -133,37 +143,101 @@ class SongController extends Controller
     {
         $grid = new Grid(new Song);
 
-        $grid->Songid('Songid');
-        $grid->Songnum('Songnum');
-        $grid->SongName('SongName');
-        $grid->Singer('Singer');
-        $grid->SongNameAlias('SongNameAlias');
-        $grid->SingerAlias('SingerAlias');
-        $grid->Langtype('Langtype');
-        $grid->Songtype('Songtype');
-        $grid->Songmark('Songmark');
-        $grid->SoundType('SoundType');
-        $grid->AlbumName('AlbumName');
-        $grid->Pinyin('Pinyin');
-        $grid->AllPinyin('AllPinyin');
-        $grid->Wordcount('Wordcount');
-        $grid->FistWordStrokes('FistWordStrokes');
-        $grid->Strokes('Strokes');
-        $grid->IssueAreaID('IssueAreaID');
-        $grid->SongCustomTypes('SongCustomTypes');
-        $grid->RecordCompany('RecordCompany');
-        $grid->singerArea('SingerArea');
-        $grid->SingerPinyin('SingerPinyin');
-        $grid->SingerAllPinyin('SingerAllPinyin');
-        $grid->SingerSex('SingerSex');
-        $grid->SingerBH('SingerBH');
-        $grid->SingerOneWorkBH('SingerOneWorkBH');
-        $grid->UploadDate('UploadDate');
-        $grid->videoClass('VideoClass');
-        $grid->Filename('Filename');
-        $grid->FileSize('FileSize');
-        $grid->SongMid('SongMid');
+        $grid->musicdbpk('总库id');
+        $grid->name('歌名');
+        $grid->singer('歌星名');
+        $grid->singerType('歌星类型')->display(function($singerType){
+            $singerTypeArray = [1=>'男',2=>'女',3=>'合唱',4=>'组合',5=>'群星'];
+            return $singerTypeArray[$singerType];
+        });
+        $grid->location('地区')->display(function($location){
+            $locationArray = [1=>'大陆',2=>'香港',3=>'台湾',4=>'欧美',5=>'日本',6=>'韩国',7=>'其它'];
+            return $locationArray[$location];
+        });
+        $grid->namePingYin('歌曲拼音');
+        $grid->nameFullPingYing('歌曲全拼');
+        $grid->nameCharacts('歌曲笔画');
+        $grid->nameWordLenght('歌曲字数');
+        $grid->nameCharactsCount('歌曲的首字笔画数');
+        $grid->singerNameFirst('歌手的首字笔画数');
+        $grid->singerPingYin('歌手拼音');
+        $grid->singerFullPingYing('歌手全拼');
+        $grid->singerLocation('歌手别名');
+        $grid->singerCharacts('歌星笔画');
+        $grid->chineseName('歌曲别名');
+        $grid->size('文件大小');
+        $grid->language('语种')->display(function($language){
+            $languageArray = [0=>'国语',1=>'粤语',2=>'英语',3=>'台语',4=>'日语',5=>'韩语',6=>'其它'];
+            return $languageArray[$language];
+        });
+        $grid->videoClass('视频类型')->display(function($videoClass){
+            $videoClassArray = [7=>'HD高清',5=>'DVD 16:9',2=>'DVD 4:3',1=>'DVD 4:3单'];
+            return $videoClassArray[$videoClass];
+        });;
+        $grid->recordCompany('唱片公司');
+        $grid->album('专辑');
+        $grid->copyRight('是否有授权')->display(function($copyRight){
+            return $copyRight?'授权':'非授权';
+        });
+        $grid->category('歌曲类别')->display(function($category){
+            $categoryArray = [1=>'流行歌曲', 2=>'男女对唱',3=>'军旅红歌',4=>'戏曲',5=>'儿童歌曲',6=>'舞曲',7=>'节日祝福',8=>'迪士高',9=>'民歌'];
+            return $categoryArray[$category];
+        });
+        $grid->type('音乐类型')->display(function($type){
+            $typeArray = [1=>'普通歌曲',2=>'新歌推荐',4=>'替换歌曲',5=>'网络歌曲'];
+            return $typeArray[$type];
+        });
+        $grid->format('版本格式')->display(function($format){
+            $formatArray = [1=>'MTV',2=>'演唱会',3=>'影视剧情',4=>'人物',5=>'风景',6=>'动画',7=>'其他'];
+            return $formatArray[$format];
+        });
+        $grid->uploadDateStr('发布时间');
+        $grid->audioClass('音频格式')->display(function($audioClass){            
+            return $audioClass==1?'原版伴奏':'消音伴奏';
+        });
+        $grid->isTaste('是否体验')->display(function($isTaste){            
+            return $isTaste==1?'是':'是否热补';
+        });
+        $grid->isApp('发布类型')->display(function($isApp){      
+            $isAppArray = [0=>'新歌', 1=>'补歌', 2=>'又是新歌又是补歌'];
+            return $isAppArray[$isApp];
+        });
+        $grid->sedName('专区名一');
+        $grid->thiName('专区名二');
+        $grid->localPath('文件路径');
+        $grid->bugeId('补歌网id');
+        $grid->isRealCopy('曲库类型')->display(function($isRealCopy){
+            $isRealCopyArray = [0=>'新歌曲库',1=>'有版权曲库',2=>'无版权曲库',3=>'经典歌曲',4=>'公播新歌'];
+            return $isRealCopyArray[$isRealCopy];
+        });
+        $grid->searchName1('查询名称1');
+        $grid->searchName2('查询名称2');
+        $grid->word('歌词');
+        $grid->introduce('制作类型');
+        $grid->hasLogo('是否加标')->display(function($hasLogo){
+            return $hasLogo?'是':'否';
+        });
+        $grid->ranking('排行');
+        $grid->musicMid('歌曲mid');
+        $grid->bscoin('宝声币');
+        $grid->ispf('是否评分')->display(function($ispf){
+            return $ispf?'是':'否';
+        });
+        $grid->isbsHide('是否隐藏')->display(function($isbsHide){
+            return $isbsHide?'是':'否';
+        });
+        $grid->variety('综艺专辑');
+        $grid->isbver('是否B版')->display(function($isbver){
+            return $isbver?'是':'否';
+        });
+        $grid->songnum('歌曲编号');
 
+
+
+        $grid->actions(function ($actions) {
+            $actions->disableView();
+        });
+        
         return $grid;
     }
 
@@ -254,6 +328,59 @@ class SongController extends Controller
         return $form;
     }
 
+    protected function editForm()
+    {
+        $form = new Form(new Song);
+        // $form->display('musicdbpk','总库id');
+        $form->text('name','歌名');
+        $form->text('singer','歌星名');
+        $form->select('singerType','歌星类型')->options([1=>'男',2=>'女',3=>'合唱',4=>'组合',5=>'群星']);
+        $form->select('location','地区')->options([1=>'大陆',2=>'香港',3=>'台湾',4=>'欧美',5=>'日本',6=>'韩国',7=>'其它']);
+        $form->text('namePingYin','歌曲拼音');
+        $form->text('nameFullPingYing','歌曲全拼');
+        $form->text('nameCharacts','歌曲笔画');
+        $form->text('nameWordLenght','歌曲字数');
+        $form->text('nameCharactsCount','歌曲的首字笔画数');
+        $form->text('singerNameFirst','歌手的首字笔画数');
+        $form->text('singerPingYin','歌手拼音');
+        $form->text('singerFullPingYing','歌手全拼');
+        $form->text('singerLocation','歌手别名');
+        $form->text('singerCharacts','歌星笔画');
+        $form->text('chineseName','歌曲别名');
+        $form->text('size','文件大小');
+        $form->select('language','语种')->options([0=>'国语',1=>'粤语',2=>'英语',3=>'台语',4=>'日语',5=>'韩语',6=>'其它']);
+        $form->select('videoClass','视频类型')->options([7=>'HD高清',5=>'DVD 16:9',2=>'DVD 4:3',1=>'DVD 4:3单']);
+        $form->text('recordCompany','唱片公司');
+        $form->text('album','专辑');
+        $form->switch('copyRight', '是否有授权');
+        $form->select('category','歌曲类别')->options([1=>'流行歌曲', 2=>'男女对唱',3=>'军旅红歌',4=>'戏曲',5=>'儿童歌曲',6=>'舞曲',7=>'节日祝福',8=>'迪士高',9=>'民歌']);
+        $form->select('type','音乐类型')->options([1=>'普通歌曲',2=>'新歌推荐',4=>'替换歌曲',5=>'网络歌曲']);
+        $form->select('format','版本格式')->options([1=>'MTV',2=>'演唱会',3=>'影视剧情',4=>'人物',5=>'风景',6=>'动画',7=>'其他']);
+        $form->text('uploadDateStr','发布时间');
+        $form->select('audioClass','音频格式')->options([0=>'消音伴奏',1=>'原版伴奏']);
+        $form->switch('isTaste','是否体验');
+        $form->select('isApp','发布类型')->options([0=>'新歌', 1=>'补歌', 2=>'又是新歌又是补歌']);
+        $form->text('sedName','专区名一');
+        $form->text('thiName','专区名二');
+        $form->text('localPath','文件路径');
+        $form->text('bugeId','补歌网id');
+        $form->select('isRealCopy','曲库类型')->options([0=>'新歌曲库',1=>'有版权曲库',2=>'无版权曲库',3=>'经典歌曲',4=>'公播新歌']);
+        $form->text('searchName1','查询名称1');
+        $form->text('searchName2','查询名称2');
+        $form->text('word','歌词');
+        $form->text('introduce','制作类型');
+        $form->switch('hasLogo','是否加标');
+        $form->text('ranking','排行');
+        $form->text('musicMid','歌曲mid');
+        $form->text('bscoin','宝声币');
+        $form->switch('ispf','是否评分');
+        $form->switch('isbsHide','是否隐藏');
+        $form->text('variety','综艺专辑');
+        $form->switch('isbver','是否B版');
+        $form->text('songnum','歌曲编号');
+        
+        return $form;
+    }
 
     /**
      * 七牛云getToken

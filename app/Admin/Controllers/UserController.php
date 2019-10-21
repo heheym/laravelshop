@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\Admin\User;
+use App\Admin\Models\User;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -85,17 +85,22 @@ class UserController extends Controller
         $grid->name('用户名');
         $grid->email('邮箱');
         $grid->phone('手机号');
-//        $grid->password('Password');
-//        $grid->remember_token('Remember token');
-//        $grid->created_at('Created at');
-//        $grid->updated_at('Updated at');
-//        $grid->api_token('Api token');
         $grid->mac('Mac');
+
+        $grid->vipState('会员状态')->display(function ($vipState) {
+            $arra = [0=>'试用会员',1=>'付费会员',2=>'已过期会员'];
+            return $arra[$vipState];
+        });
+
+        $grid->vipXgStartDay('可浏览天数');
+        $grid->vipStartTime('会员开始时间');
         $grid->vipTime('会员到期时间');
 
-        $grid->rank('级别')->display(function ($rank) {
-            return $rank ? '高清' : '普清';
+        $grid->download('可下载次数');
+        $grid->add('是否可以补歌')->display(function ($add) {
+            return $add?'是':'否';
         });
+
 
         return $grid;
     }
@@ -116,8 +121,8 @@ class UserController extends Controller
         $show->phone('Phone');
         $show->password('Password');
         $show->remember_token('Remember token');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+//        $show->created_at('Created at');
+//        $show->updated_at('Updated at');
         $show->api_token('Api token');
         $show->mac('Mac');
         $show->vipTime('VipTime');
@@ -137,16 +142,15 @@ class UserController extends Controller
         $form->text('name', '用户名');
         $form->email('email', '邮箱');
         $form->mobile('phone', '手机号');
-//        $form->password('password', 'Password');
-//        $form->text('remember_token', 'Remember token');
-//        $form->text('api_token', 'Api token');
         $form->text('mac', 'Mac');
+
+        $form->select('vipState', '会员状态')->options([0=>'试用会员',1=>'付费会员',2=>'已过期会员']);
+        $form->text('vipXgStartDay', '可浏览天数');
+        $form->datetime('vipStartTime', '会员开始时间');
         $form->datetime('vipTime', '会员到期时间');
-        $rank = [
-            0 => '普清',
-            1 => '高清',
-        ];
-        $form->select('rank', '级别')->options($rank);
+        $form->text('download', '可下载次数');
+        $form->switch('add', '是否可以补歌');
+
         return $form;
     }
 }

@@ -31,6 +31,9 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::get('/song/get_users_songs', 'Api\SongController@get_users_songs');  //获取用户已下载歌曲列表
     Route::get('/song/get_user_warehouse', 'Api\SongController@get_user_warehouse');  //获取用户已入库歌曲列表
+    
+    Route::get('/song/delete_danger', 'Api\SongController@delete_danger');  //删除高危歌曲
+    Route::get('/song/delete_ban', 'Api\SongController@delete_ban');  //删除禁播歌曲
 });
 
 //url，需要加一个api，如：192.168.10.227:81/api/login
@@ -44,5 +47,7 @@ Route::post('/song/ban_songs', 'Api\SongController@ban_songs');  //添加/更新
 Route::post('/song/danger_songs', 'Api\SongController@danger_songs');  //添加/更新高危
 Route::get('/song/get_ban_songs', 'Api\SongController@get_ban_songs');  //添加/更新高危
 Route::get('/song/get_danger_songs', 'Api\SongController@get_danger_songs');  //添加/更新高危
+
+
 
 
