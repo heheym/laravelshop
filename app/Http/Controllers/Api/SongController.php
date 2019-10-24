@@ -133,7 +133,7 @@ class SongController extends Controller
         //成功入库
         if($data['param']==2){
             $result = DB::table('user_warehouse')->insert(['musicdbpk'=>$data['Songid'],
-                'userid'=>$user->id,'date'=>$date,'path'=>$data['path']]);
+                'userid'=>$user->id,'date'=>$date,'path'=>$data['path'],'songnum'=>$data['songnum']]);
             if($result){
                 return response()->json(['Code'=>200,'Msg'=>'入库成功','Data'=>['date'=>$date]]);
             }

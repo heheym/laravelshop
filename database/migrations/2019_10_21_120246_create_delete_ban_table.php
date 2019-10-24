@@ -19,6 +19,7 @@ class CreateDeleteBanTable extends Migration
             $table->integer('banId');
             $table->string('explain')->nullable();  
             $table->timestamp('time');  
+            $table->string('songnum',20);   //歌曲编号
         });
         
     }

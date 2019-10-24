@@ -18,7 +18,8 @@ class CreateUserWarehouseTable extends Migration
             $table->integer('userid');   //用户id
             $table->integer('musicdbpk');   //歌曲总库id
             $table->timestamp('date');   //日期
-            $table->string('path');   //日期
+            $table->string('path');   //路径
+            $table->string('songnum',20);   //歌曲编号
 
             $table->charset = 'utf8';
             $table->engine = 'InnoDB';
