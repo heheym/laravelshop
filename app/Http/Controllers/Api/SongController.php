@@ -133,7 +133,7 @@ class SongController extends Controller
         //成功入库
         if($data['param']==2){
             $result = DB::table('user_warehouse')->insert(['musicdbpk'=>$data['Songid'],
-                'userid'=>$user->id,'date'=>$date]);
+                'userid'=>$user->id,'date'=>$date,'path'=>$data['path']]);
             if($result){
                 return response()->json(['Code'=>200,'Msg'=>'入库成功','Data'=>['date'=>$date]]);
             }
@@ -360,27 +360,33 @@ class SongController extends Controller
     }
 
     //用户删除禁播歌曲
-    public function delete_ban(){
+    public function delete_ban()
+    {
         $user = Auth::guard('api')->user();
         $get = $_GET;
         $get['userId'] = $user->id;
+        $time = date('Y-m-d H:i:s');
         unset($get['api_token']);
+        $get['time'] = $time;
         $result = DB::table('delete_ban')->insert($get); 
         if($result){
-            return response()->json(['Code'=>200,'Msg'=>'记录删除禁播歌曲成功','Data'=>null]);
+            return response()->json(['Code'=>200,'Msg'=>'记录删除禁播歌曲成功','Data'=>$time]);
         }
         return response()->json(['Code'=>500,'Msg'=>'记录删除禁播歌曲失败','Data'=>null]);
     }
 
     //用户删除高危歌曲
-    public function delete_danger(){
+    public function delete_danger()
+    {
         $user = Auth::guard('api')->user();
         $get = $_GET;
         $get['userId'] = $user->id;
+        $time = date('Y-m-d H:i:s');
         unset($get['api_token']);
+        $get['time'] = $time;
         $result = DB::table('delete_danger')->insert($get);
         if($result){
-            return response()->json(['Code'=>200,'Msg'=>'记录删除高危歌曲成功','Data'=>null]);
+            return response()->json(['Code'=>200,'Msg'=>'记录删除高危歌曲成功','Data'=>$time]);
         }
         return response()->json(['Code'=>500,'Msg'=>'记录删除高危歌曲失败','Data'=>null]);
     }

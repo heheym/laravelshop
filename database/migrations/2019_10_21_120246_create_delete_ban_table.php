@@ -17,8 +17,8 @@ class CreateDeleteBanTable extends Migration
             $table->increments('id');
             $table->integer('userId');
             $table->integer('banId');
-            $table->integer('musicId');
             $table->string('explain')->nullable();  
+            $table->timestamp('time');  
         });
         
     }

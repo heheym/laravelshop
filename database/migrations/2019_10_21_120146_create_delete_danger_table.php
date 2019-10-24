@@ -20,8 +20,8 @@ class CreateDeleteDangerTable extends Migration
             $table->increments('id');
             $table->integer('userId');
             $table->integer('dangerId');
-            $table->integer('musicId');
             $table->string('explain')->nullable();
+            $table->timestamp('time');  
            
         });
     }
