@@ -34,6 +34,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     
     Route::get('/song/delete_danger', 'Api\SongController@delete_danger');  //删除高危歌曲
     Route::get('/song/delete_ban', 'Api\SongController@delete_ban');  //删除禁播歌曲
+
+    Route::get('/song/get_record', 'Api\SongController@get_record');  //消息推送
 });
 
 //url，需要加一个api，如：192.168.10.227:81/api/login

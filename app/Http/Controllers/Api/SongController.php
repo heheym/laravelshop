@@ -147,6 +147,7 @@ class SongController extends Controller
         $get = $_GET;
         $timestamp = !empty($get['timestamp'])?$get['timestamp']:'';
         $signature = !empty($get['signature'])?$get['signature']:'';
+        $date = date('Y-m-d H:i:s');
         if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
             return response()->json(['Code'=>500,'Msg'=>'加密出错','Data'=>null]);
         }
@@ -155,17 +156,41 @@ class SongController extends Controller
             $exists = DB::table('songs')->where('musicdbpk',$post['musicdbpk'])->exists();
             if($exists){
                 if(!empty($post['bugeId'])){
-                    DB::table('add_songs')->where('bugeId',$post['bugeId'])->update(['state'=>2,'musicdbpk'=>$post['musicdbpk']]);
+                    DB::table('add_songs')->where('bugeId',$post['bugeId'])->update(['state'=>2,'musicdbpk'=>$post['musicdbpk'],'recordDate'=>$date]);
                 }else{
                     $result = DB::table('songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
                 }
 
             }else{
                 if(!empty($post['bugeId'])){
-                    DB::table('add_songs')->where('bugeId',$post['bugeId'])->update(['state'=>2,'musicdbpk'=>$post['musicdbpk']]);
+                    DB::table('add_songs')->where('bugeId',$post['bugeId'])->update(['state'=>2,'musicdbpk'=>$post['musicdbpk'],'recordDate'=>$date]);
                     unset($post['bugeId']);
                 }
                 $result = DB::table('songs')->insert($post);
+                //消息推送的，加1
+                
+                $existence = DB::table('song_record')->where([['starttime','<',$date],['endtime','>',$date]])->exists();
+                if($existence){
+                    DB::table('song_record')->where([['starttime','<',$date],['endtime','>',$date]])->increment('total');
+                }else{
+                    $time1 = date('Y-m-d');
+                    $time2 = $time1.' 09:00:00';
+                    $time3 = $time1.' 16:30:00';
+                    $time4 = date("Y-m-d",strtotime("+1 day"));            
+                    if($time1<=$date && $date<$time2){
+                        $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+                        $endtime = date("Y-m-d").' 09:00:00';
+                    }elseif($time2<=$date && $date<$time3){
+                        $starttime = date("Y-m-d").' 09:00:00';
+                        $endtime = date("Y-m-d").' 16:30:00';                    
+                    }elseif($time3<=$date && $date<$time4){
+                        $starttime = date("Y-m-d").' 16:30:00';
+                        $endtime = date("Y-m-d",strtotime("+1 day")).' 09:00:00';
+                    }
+
+                    DB::table('song_record')->insert(['starttime'=>$starttime,'endtime'=>$endtime,'total'=>1]);
+                    
+                }
             }
 
             return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
@@ -183,6 +208,7 @@ class SongController extends Controller
 
         $timestamp = !empty($get['timestamp'])?$get['timestamp']:'';
         $signature = !empty($get['signature'])?$get['signature']:'';
+        $date = date('Y-m-d H:i:s');
         if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
             return response()->json(['Code'=>500,'Msg'=>'加密出错','Data'=>null]);
         }
@@ -192,6 +218,7 @@ class SongController extends Controller
             if($exists){
                 $result = DB::table('ban_songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
             }else{
+                $post['recordDate'] = $date;
                 $result = DB::table('ban_songs')->insert($post);
             }
 
@@ -211,6 +238,7 @@ class SongController extends Controller
 
         $timestamp = !empty($get['timestamp'])?$get['timestamp']:'';
         $signature = !empty($get['signature'])?$get['signature']:'';
+        $date = date('Y-m-d H:i:s');
         if(md5($timestamp.'1f2606123d0b5f8282561cf5e0d049ab')!=$signature){
             return response()->json(['Code'=>500,'Msg'=>'加密出错','Data'=>null]);
         }
@@ -220,6 +248,7 @@ class SongController extends Controller
             if($exists){
                 $result = DB::table('danger_songs')->where('musicdbpk',$post['musicdbpk'])->update($post);
             }else{
+                $post['recordDate'] = $date;
                 $result = DB::table('danger_songs')->insert($post);
             }
 
@@ -390,4 +419,61 @@ class SongController extends Controller
         }
         return response()->json(['Code'=>500,'Msg'=>'记录删除高危歌曲失败','Data'=>null]);
     }
+
+    //消息推送
+    public function get_record()
+    {
+        $user = Auth::guard('api')->user();
+        $date = date('Y-m-d H:i:s');
+        $time1 = date('Y-m-d');
+        $time2 = $time1.' 09:00:00';
+        $time3 = $time1.' 16:30:00';
+        $time4 = date("Y-m-d",strtotime("+1 day"));            
+        if($time1<=$date && $date<$time2){
+            $starttime = date("Y-m-d",strtotime("-1 day")).' 09:00:00';
+            $endtime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+        }elseif($time2<=$date && $date<$time3){
+            $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+            $endtime = date("Y-m-d").' 09:00:00';
+        }elseif($time3<=$date && $date<$time4){
+            $starttime = date("Y-m-d").' 09:00:00';
+            $endtime = date("Y-m-d").' 16:30:00';
+        }
+        
+        $newRecord = DB::table('song_record')->where([['starttime','=',$starttime],['endtime','=',$endtime]])->value('total');
+        if(!isset($newRecord)){
+            $newRecord = 0;
+        }
+        $addRecord = DB::table('add_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]],['state','=',2],['userid'=>$user->id])->count();
+        $banRecord = DB::table('ban_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]])->count();
+        $dangerRecord = DB::table('danger_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]])->count();
+
+        $data = ['newRecord'=>$newRecord,'addRecord'=>$addRecord,'banRecord'=>$banRecord,'dangerRecord'=>$dangerRecord];
+
+        //记录用户获取推送的时间
+        $exist = DB::table('user_record')->where('userid',$user->id)->exists();
+        if(!$exist){
+            DB::table('user_record')->insert(['userid'=>$user->id,'date'=>$date]);
+        }else{          
+            if($time1<=$date && $date<$time2){
+                $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+                $endtime = date("Y-m-d").' 09:00:00';
+            }elseif($time2<=$date && $date<$time3){
+                $starttime = date("Y-m-d").' 09:00:00';
+                $endtime = date("Y-m-d").' 16:30:00';                    
+            }elseif($time3<=$date && $date<$time4){
+                $starttime = date("Y-m-d").' 16:30:00';
+                $endtime = date("Y-m-d",strtotime("+1 day")).' 09:00:00';
+            }
+            $existence = DB::table('user_record')->where([['date','>',$starttime],['date','<',$endtime]])->exists();
+            if($existence){
+                return response()->json(['Code'=>200,'Msg'=>'','Data'=>['newRecord'=>0,'addRecord'=>0,'banRecord'=>0,'dangerRecord'=>0]]);
+            }else{
+                DB::table('user_record')->where('userid',$user->id)->update(['date'=>$date]);
+            }
+        }
+
+        return response()->json(['Code'=>200,'Msg'=>'','Data'=>$data]);
+    }
+
 }
