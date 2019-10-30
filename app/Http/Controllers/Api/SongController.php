@@ -451,27 +451,27 @@ class SongController extends Controller
         $data = ['newRecord'=>$newRecord,'addRecord'=>$addRecord,'banRecord'=>$banRecord,'dangerRecord'=>$dangerRecord,'starttime'=>$starttime,'endtime'=>$endtime];
 
         //记录用户获取推送的时间
-        $exist = DB::table('user_record')->where('userid',$user->id)->exists();
-        if(!$exist){
-            DB::table('user_record')->insert(['userid'=>$user->id,'date'=>$date]);
-        }else{          
-            if($time1<=$date && $date<$time2){
-                $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
-                $endtime = date("Y-m-d").' 09:00:00';
-            }elseif($time2<=$date && $date<$time3){
-                $starttime = date("Y-m-d").' 09:00:00';
-                $endtime = date("Y-m-d").' 16:30:00';                    
-            }elseif($time3<=$date && $date<$time4){
-                $starttime = date("Y-m-d").' 16:30:00';
-                $endtime = date("Y-m-d",strtotime("+1 day")).' 09:00:00';
-            }
-            $existence = DB::table('user_record')->where([['date','>',$starttime],['date','<',$endtime]])->exists();
-            if($existence){
-                return response()->json(['Code'=>200,'Msg'=>'','Data'=>['newRecord'=>0,'addRecord'=>0,'banRecord'=>0,'dangerRecord'=>0]]);
-            }else{
-                DB::table('user_record')->where('userid',$user->id)->update(['date'=>$date]);
-            }
-        }
+        // $exist = DB::table('user_record')->where('userid',$user->id)->exists();
+        // if(!$exist){
+        //     DB::table('user_record')->insert(['userid'=>$user->id,'date'=>$date]);
+        // }else{          
+        //     if($time1<=$date && $date<$time2){
+        //         $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+        //         $endtime = date("Y-m-d").' 09:00:00';
+        //     }elseif($time2<=$date && $date<$time3){
+        //         $starttime = date("Y-m-d").' 09:00:00';
+        //         $endtime = date("Y-m-d").' 16:30:00';                    
+        //     }elseif($time3<=$date && $date<$time4){
+        //         $starttime = date("Y-m-d").' 16:30:00';
+        //         $endtime = date("Y-m-d",strtotime("+1 day")).' 09:00:00';
+        //     }
+        //     $existence = DB::table('user_record')->where([['date','>',$starttime],['date','<',$endtime]])->exists();
+        //     if($existence){
+        //         return response()->json(['Code'=>200,'Msg'=>'','Data'=>['newRecord'=>0,'addRecord'=>0,'banRecord'=>0,'dangerRecord'=>0]]);
+        //     }else{
+        //         DB::table('user_record')->where('userid',$user->id)->update(['date'=>$date]);
+        //     }
+        // }
 
         return response()->json(['Code'=>200,'Msg'=>'','Data'=>$data]);
     }
