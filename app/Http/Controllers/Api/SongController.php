@@ -167,30 +167,30 @@ class SongController extends Controller
                     unset($post['bugeId']);
                 }
                 $result = DB::table('songs')->insert($post);
-                //消息推送的，加1
-                
-                $existence = DB::table('song_record')->where([['starttime','<',$date],['endtime','>',$date]])->exists();
-                if($existence){
-                    DB::table('song_record')->where([['starttime','<',$date],['endtime','>',$date]])->increment('total');
-                }else{
-                    $time1 = date('Y-m-d');
-                    $time2 = $time1.' 09:00:00';
-                    $time3 = $time1.' 16:30:00';
-                    $time4 = date("Y-m-d",strtotime("+1 day"));            
-                    if($time1<=$date && $date<$time2){
-                        $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
-                        $endtime = date("Y-m-d").' 09:00:00';
-                    }elseif($time2<=$date && $date<$time3){
-                        $starttime = date("Y-m-d").' 09:00:00';
-                        $endtime = date("Y-m-d").' 16:30:00';                    
-                    }elseif($time3<=$date && $date<$time4){
-                        $starttime = date("Y-m-d").' 16:30:00';
-                        $endtime = date("Y-m-d",strtotime("+1 day")).' 09:00:00';
-                    }
 
-                    DB::table('song_record')->insert(['starttime'=>$starttime,'endtime'=>$endtime,'total'=>1]);
-                    
+                //消息推送的，加1
+                $time1 = date('Y-m-d');
+                $time2 = $time1.' 09:00:00';
+                $time3 = $time1.' 16:30:00';
+                $time4 = date("Y-m-d",strtotime("+1 day"));            
+                if($time1<=$date && $date<$time2){
+                    $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+                    $endtime = date("Y-m-d").' 09:00:00';
+                }elseif($time2<=$date && $date<$time3){
+                    $starttime = date("Y-m-d").' 09:00:00';
+                    $endtime = date("Y-m-d").' 16:30:00';                    
+                }elseif($time3<=$date && $date<$time4){
+                    $starttime = date("Y-m-d").' 16:30:00';
+                    $endtime = date("Y-m-d",strtotime("+1 day")).' 09:00:00';
                 }
+                
+                $exist = DB::table('song_record')->where(['time','>=',$starttime],['time','<',$endtime])->exists();
+                if($exist){
+                    DB::table('song_record')->where(['time','>=',$starttime],['time','<',$endtime])->increment('total');
+                }else{
+                    DB::table('song_record')->insert(['time'=>$date,'total'=>1]);
+                }     
+                
             }
 
             return response()->json(['Code'=>200,'Msg'=>'已更新歌曲数据','Data'=>null]);
@@ -440,7 +440,7 @@ class SongController extends Controller
             $endtime = date("Y-m-d").' 16:30:00';
         }
         
-        $newRecord = DB::table('song_record')->where([['starttime','=',$starttime],['endtime','=',$endtime]])->value('total');
+        $newRecord = DB::table('song_record')->where([['time','>',$starttime],['time','<',$endtime]])->value('total');
         if(!isset($newRecord)){
             $newRecord = 0;
         }
