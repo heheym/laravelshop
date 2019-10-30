@@ -448,7 +448,7 @@ class SongController extends Controller
         $banRecord = DB::table('ban_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]])->count();
         $dangerRecord = DB::table('danger_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]])->count();
 
-        $data = ['newRecord'=>$newRecord,'addRecord'=>$addRecord,'banRecord'=>$banRecord,'dangerRecord'=>$dangerRecord];
+        $data = ['newRecord'=>$newRecord,'addRecord'=>$addRecord,'banRecord'=>$banRecord,'dangerRecord'=>$dangerRecord,'starttime'=>$starttime,'endtime'=>$endtime];
 
         //记录用户获取推送的时间
         $exist = DB::table('user_record')->where('userid',$user->id)->exists();
