@@ -430,25 +430,41 @@ class SongController extends Controller
         $time3 = $time1.' 16:30:00';
         $time4 = date("Y-m-d",strtotime("+1 day"));            
         if($time1<=$date && $date<$time2){
-            $starttime = date("Y-m-d",strtotime("-1 day")).' 09:00:00';
-            $endtime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+            $starttime = date("Y-m-d",strtotime("-2 day")).' 16:30:00';
+            $endtime = date("Y-m-d",strtotime("-1 day")).' 09:00:00';
+            $starttime1 = date("Y-m-d",strtotime("-1 day")).' 09:00:00';
+            $endtime1 = date("Y-m-d",strtotime("-1 day")).' 16:30:00'; 
         }elseif($time2<=$date && $date<$time3){
+            $starttime = date("Y-m-d",strtotime("-1 day")).' 09:00:00';
+            $endtime = date("Y-m-d",strtotime("-1 day")).' 16:30:00'; 
+            $starttime1 = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
+            $endtime1 = date("Y-m-d").' 09:00:00';
+        }elseif($time3<=$date && $date<$time4){
             $starttime = date("Y-m-d",strtotime("-1 day")).' 16:30:00';
             $endtime = date("Y-m-d").' 09:00:00';
-        }elseif($time3<=$date && $date<$time4){
-            $starttime = date("Y-m-d").' 09:00:00';
-            $endtime = date("Y-m-d").' 16:30:00';
+            $starttime1 = date("Y-m-d").' 09:00:00';
+            $endtime1 = date("Y-m-d").' 16:30:00';
         }
-        
-        $newRecord = DB::table('song_record')->where([['time','>',$starttime],['time','<',$endtime]])->value('total');
+
+        $newRecord = DB::table('song_record')->where([['time','>',$starttime],['time','<=',$endtime]])->value('total');
+        $newRecord1 = DB::table('song_record')->where([['time','>',$starttime1],['time','<=',$endtime1]])->value('total');
+
         if(!isset($newRecord)){
             $newRecord = 0;
         }
-        $addRecord = DB::table('add_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]],['state','=',2],['userid'=>$user->id])->count();
-        $banRecord = DB::table('ban_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]])->count();
-        $dangerRecord = DB::table('danger_songs')->where([['recordDate','>',$starttime],['recordDate','<',$endtime]])->count();
+        if(!isset($newRecord1)){
+            $newRecord1 = 0;
+        }
+        $addRecord = DB::table('add_songs')->where([['recordDate','>',$starttime],['recordDate','<=',$endtime]],['state','=',2],['userid'=>$user->id])->count();
+        $addRecord1 = DB::table('add_songs')->where([['recordDate','>',$starttime1],['recordDate','<=',$endtime1]],['state','=',2],['userid'=>$user->id])->count();
 
-        $data = ['newRecord'=>$newRecord,'addRecord'=>$addRecord,'banRecord'=>$banRecord,'dangerRecord'=>$dangerRecord,'starttime'=>$starttime,'endtime'=>$endtime];
+        $banRecord = DB::table('ban_songs')->where([['recordDate','>',$starttime],['recordDate','<=',$endtime]])->count();
+        $banRecord1 = DB::table('ban_songs')->where([['recordDate','>',$starttime1],['recordDate','<=',$endtime1]])->count();
+
+        $dangerRecord = DB::table('danger_songs')->where([['recordDate','>',$starttime],['recordDate','<=',$endtime]])->count();
+        $dangerRecord1 = DB::table('danger_songs')->where([['recordDate','>',$starttime1],['recordDate','<=',$endtime1]])->count();
+
+        $data = [['newRecord'=>$newRecord,'addRecord'=>$addRecord,'banRecord'=>$banRecord,'dangerRecord'=>$dangerRecord,'starttime'=>$starttime,'endtime'=>$endtime],['newRecord'=>$newRecord1,'addRecord'=>$addRecord1,'banRecord'=>$banRecord1,'dangerRecord'=>$dangerRecord1,'starttime'=>$starttime1,'endtime'=>$endtime1]];
 
         //记录用户获取推送的时间
         // $exist = DB::table('user_record')->where('userid',$user->id)->exists();

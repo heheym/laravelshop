@@ -43,7 +43,10 @@ trait AuthenticatesUsers
         if ($this->attemptLogin($request)) {
 //            return $this->sendLoginResponse($request);
             //api 登录 by ma
-            $user = $this->guard()->user();
+            $user = $this->guard()->user();  
+            
+            DB::table('users')->where('id',$user->id)->update(['mac'=>$request->mac]);
+            
             $user->generateToken();
             $user->expire = 43200;
             $uploadDate = DB::table('songs')->orderBy('uploadDateStr','desc')->value('uploadDateStr');
@@ -71,11 +74,21 @@ trait AuthenticatesUsers
      */
     protected function validateLogin(Request $request)
     {
-        $this->validate($request, [
-            $this->username() => 'required|string',
-            'password' => 'required|string',
-            'mac' => 'required|exists:users,mac,phone,'.$request->input('phone'),
-        ]);
+        $mac = DB::table('users')->where('phone',$request->phone)->value('mac');
+
+        if(empty($mac)){
+            $request->validate([
+                $this->username() => 'required|string',
+                'password' => 'required|string',
+                'mac' => 'required',
+            ]);
+        }else{
+            $request->validate([
+                $this->username() => 'required|string',
+                'password' => 'required|string',
+                'mac' => 'required|exists:users,mac,phone,'.$request->input('phone'),
+            ]);
+        }
     }
 
     /**
